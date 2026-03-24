@@ -1,5 +1,7 @@
 using UnityEngine;
+using System.Collections.Generic;
 
+[CreateAssetMenu(menuName = "Inventory/Item Data", fileName = "ItemData")]
 public class ItemData : ScriptableObject
 {
     // uso uno scriptable object per definire i dati di un item, così da poterli modificare facilmente nell'inspector e 
@@ -9,11 +11,7 @@ public class ItemData : ScriptableObject
     [SerializeField] private string itemDescription;
 
     [Header("Effects")]
-    [SerializeField] private ItemEffect itemEffect;
-    [Min(0f)]
-    [SerializeField] private float effectValue = 1.5f;
-    [Min(0f)]
-    [SerializeField] private float durationSeconds = 5f;
+    [SerializeField] private List<ItemEffect> effects = new List<ItemEffect>();
 
     [Header("Visual")]
     [SerializeField] private Sprite itemIcon;
@@ -26,7 +24,5 @@ public class ItemData : ScriptableObject
     public string Description => itemDescription;
     public Sprite Icon => itemIcon;
     public int MaxStack => maxStack;
-    public ItemEffect Effect => itemEffect;
-    public float EffectValue => effectValue;
-    public float DurationSeconds => durationSeconds;
+    public IReadOnlyList<ItemEffect> Effects => effects;
 }
