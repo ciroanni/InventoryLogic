@@ -5,6 +5,8 @@ using UnityEngine.InputSystem;
 
 public class FollowPlayer : MonoBehaviour
 {
+    // semplice script per far seguire la camera al player, con rotazione e zoom basati sull'input del mouse
+    // riscritto perchè quello dello starter assets di unity era scomparso...
     [Header("Target")]
     [SerializeField] private Transform target;
     [SerializeField] private float targetHeight = 1.6f;

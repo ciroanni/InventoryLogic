@@ -6,7 +6,7 @@ public class InventorySystem : MonoBehaviour
 {
     [Header("Inventory")]
     [Min(1)]
-    [SerializeField] private int slotNumbers = 16;
+    [SerializeField] private int slotNumbers = 18;
 
     private readonly List<InventorySlotInfo> slots = new List<InventorySlotInfo>();
 
@@ -41,6 +41,7 @@ public class InventorySystem : MonoBehaviour
             return false;
         }
 
+        // remaining è la quantità di item che ancora devo aggiungere mentre itero sugli slot
         int remaining = quantity;
 
         // prima faccio stack degli item uguali già presenti
@@ -55,6 +56,7 @@ public class InventorySystem : MonoBehaviour
             if (spaceLeft <= 0)
                 continue;
 
+            // aggiungo quanti item riesco a stackare in questo slot
             int quantityToAdd = Mathf.Min(spaceLeft, remaining);
             slot.quantity += quantityToAdd;
             remaining -= quantityToAdd;
@@ -101,10 +103,44 @@ public class InventorySystem : MonoBehaviour
             return false;
         }
 
-        // use item
+        ItemData itemToUse = slot.item;
+        if (itemToUse == null)
+        {
+            return false;
+        }
+
+        // un item può avere più effetti, ad esempio un cibo potrebbe curare HP e aumentare temporaneamente la velocità di movimento
+        IReadOnlyList<ItemEffect> effects = itemToUse.Effects; // readonly per sicurezza, non voglio che gli effetti vengano modificati da fuori
+        if (effects == null || effects.Count == 0)
+        {
+            return false;
+        }
+
+        // contesto con tutte le info che potrebbero servire agli effetti
+        ItemEffectContext context = new ItemEffectContext(gameObject, transform, this, itemToUse, slotIndex); 
+        bool appliedAnyEffect = false;
+
+        for (int i = 0; i < effects.Count; i++)
+        {
+            ItemEffect effect = effects[i];
+            if (effect == null)
+            {
+                continue;
+            }
+
+            if (effect.Apply(context))
+            {
+                appliedAnyEffect = true;
+            }
+        }
+
+        if (!appliedAnyEffect)
+        {
+            return false;
+        }
 
         RemoveItem(slotIndex);
-        //OnItemUsed?.Invoke(itemToUse, slotIndex);
+        OnItemUsed?.Invoke(itemToUse, slotIndex);
         return true;
     }
 

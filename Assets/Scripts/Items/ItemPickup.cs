@@ -16,9 +16,16 @@ public class ItemPickup : MonoBehaviour
         if (other.CompareTag("Player"))
         {
             InventorySystem inventory = other.GetComponent<InventorySystem>();
-            if (inventory != null && inventory.AddItem(itemData, quantity))
+            if (inventory != null)
             {
-                Destroy(gameObject);
+                if (inventory.AddItem(itemData, quantity))
+                {
+                    Destroy(gameObject);
+                }
+                else
+                {
+                    Debug.Log("Inventario pieno, non puoi raccogliere " + itemData.ItemName);
+                }
             }
         }
     }
